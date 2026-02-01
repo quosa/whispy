@@ -1,0 +1,28 @@
+# Whispy configuration
+# Copy this file to config.toml and adjust as needed.
+
+[whispy]
+# Language: "en" or "fr"
+language = "en"
+
+# Whisper model for speech-to-text: "tiny", "base", "small", "medium"
+# Larger = more accurate but slower. "small" is a good default for M4.
+whisper_model = "small"
+
+# Ollama model for the AI responses
+llm_model = "qwen3:8b"
+
+# TTS backend: "say" (macOS built-in) or "piper"
+tts_backend = "say"
+
+# TTS voice (leave empty for auto-select based on language)
+# macOS voices: run `say -v ?` to see all available voices
+# English: Samantha, Daniel, Karen   French: Thomas, Amelie
+tts_voice = ""
+
+# Speech rate for macOS say (words per minute, default ~200 is too fast for kids)
+# 155 is a comfortable pace; adjust to taste
+tts_rate = 155
+
+# Max conversation messages to keep in memory
+max_history = 20
