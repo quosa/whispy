@@ -215,16 +215,7 @@ Run through this checklist to verify the full flow works:
 | Default LLM model | `qwen3:8b` (already installed). `mistral-nemo:12b` recommended for French. |
 | Dependency management | `uv` |
 | Target hardware | MacBook Pro M4, 64GB RAM, Apple Silicon |
-| Languages for v1 | English + French (STT + TTS). Finnish STT works, Finnish TTS TBD. |
-
-## Open Questions
-
-1. **Finnish TTS** — Piper's Finnish voice selection is limited. Options:
-   - Accept lower-quality eSpeak for Finnish TTS in v1
-   - Skip Finnish TTS and only support Finnish STT (you speak Finnish, it
-     understands but replies in English/French)
-   - Investigate cloud TTS for Finnish only (adds online dependency)
-   - **What's your preference?**
+| Languages for v1 | English + French (STT + TTS). Finnish postponed to later iteration. |
 
 ---
 
