@@ -7,9 +7,36 @@ Two backends:
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from typing import Protocol
+
+# Matches emoji characters that TTS engines try to read aloud
+_EMOJI_RE = re.compile(
+    "["
+    "\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F900-\U0001F9FF"  # supplemental symbols
+    "\U0001FA00-\U0001FA6F"  # chess symbols, extended-A
+    "\U0001FA70-\U0001FAFF"  # symbols extended-A
+    "\U00002702-\U000027B0"  # dingbats
+    "\U0001F1E0-\U0001F1FF"  # flags
+    "\u200d"                  # zero-width joiner
+    "\ufe0f"                  # variation selector-16
+    "\u2600-\u26FF"           # misc symbols (sun, stars, etc.)
+    "\u2700-\u27BF"           # dingbats
+    "]+",
+    flags=re.UNICODE,
+)
+
+
+def clean_for_speech(text: str) -> str:
+    """Strip emojis and collapse extra whitespace for TTS."""
+    text = _EMOJI_RE.sub("", text)
+    text = re.sub(r"  +", " ", text)  # collapse double spaces left by removal
+    return text.strip()
 
 
 class TTSBackend(Protocol):
@@ -34,7 +61,8 @@ class MacOSSayTTS:
 
     def speak(self, text: str) -> None:
         """Speak text through the system speaker. Blocks until done."""
-        if not text.strip():
+        text = clean_for_speech(text)
+        if not text:
             return
         cmd = ["say", "-v", self.voice, "-r", str(self.rate), text]
         subprocess.run(cmd, check=True)
@@ -53,7 +81,8 @@ class PiperTTS:
 
     def speak(self, text: str) -> None:
         """Synthesize speech and play through speakers."""
-        if not text.strip():
+        text = clean_for_speech(text)
+        if not text:
             return
         # Piper outputs WAV to stdout; pipe to aplay/afplay for playback
         play_cmd = "afplay" if sys.platform == "darwin" else "aplay"
