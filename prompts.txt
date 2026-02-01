@@ -28,3 +28,14 @@ Dependency management — any preference? I'd suggest uv.
 
 Apple Silicon or Intel Mac? Affects whisper.cpp acceleration and Ollama performance.
  - apple silicon, M4 mbp with 64GB
+
+# definitive naswer to finnish:
+
+Finnish TTS — you didn't answer this one directly. Piper's Finnish voices are limited. Options:
+
+Accept lower-quality eSpeak for Finnish speech output
+Finnish STT only (kids speak Finnish, assistant replies in English/French)
+Cloud TTS for Finnish (breaks offline capability)
+What's your preference? Or should we just skip Finnish TTS for v1 and see how it goes?
+
+ - we can start with just english and french - let's postpone Finnish for later iterations
