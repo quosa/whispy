@@ -24,6 +24,11 @@ Python is the pragmatic choice here — all four components (audio capture,
 whisper.cpp, LLM clients, Piper) have mature Python bindings. A compiled
 language would add complexity with no real benefit for a terminal app.
 
+**Target hardware:** MacBook Pro M4 with 64GB RAM — more than enough to run
+whisper `medium`, a 14B parameter LLM, and Piper TTS simultaneously.
+
+**Dependency management:** `uv` — fast, handles venvs automatically.
+
 ## Technology Choices
 
 | Component | Library | Why |
@@ -38,26 +43,36 @@ language would add complexity with no real benefit for a terminal app.
 ### Model Recommendations
 
 **Whisper STT models:**
-- `base` or `small` for fast responses (good enough for clear child speech)
-- `medium` if accuracy is poor — trades speed for quality
-- All models support English, French, and Finnish
+- `small` for v1 — good balance of speed and accuracy on M4
+- `medium` if accuracy is poor with child speech — your M4 handles it easily
+- All models support English, French, and Finnish out of the box
 
 **LLM models (via Ollama):**
-- `llama3.2:3b` — fast, good enough for homework help
-- `mistral:7b` — good multilingual support (especially French)
-- `gemma2:9b` — alternative with solid multilingual capabilities
+
+You already have `llama3.1` and `qwen3` installed. Recommendations:
+
+- `qwen3:8b` — your best starting point; strong multilingual (including
+  French and reasonable Finnish), already installed
+- `mistral-nemo:12b` — worth downloading; excellent French (Mistral is a
+  French company), 12B fits easily in 64GB
+- `llama3.1:8b` — solid English, decent French, weaker Finnish; good fallback
+
+Recommendation: **start with qwen3, try mistral-nemo for French sessions.**
+With 64GB you could even run a 14B model comfortably, but 8-12B is the sweet
+spot for response speed with kids.
 
 **Piper TTS voices:**
 - English: `en_US-lessac-medium` or `en_GB-alan-medium`
 - French: `fr_FR-siwis-medium`
-- Finnish: `fi_FI-harri-medium` (check availability — Finnish voices are limited)
+- Finnish: limited availability — `fi_FI-harri-medium` if it exists, otherwise
+  fall back to eSpeak (lower quality) or skip Finnish TTS in v1
 
 ## Requirements
 
 ### Functional Requirements
 
 1. **R1 — Voice capture:** Record from laptop microphone with push-to-talk
-   (hold spacebar) or voice-activity detection (VAD)
+   (press spacebar to talk, press again to stop). VAD as a future enhancement
 2. **R2 — Speech-to-text:** Transcribe recorded audio to text using whisper.cpp,
    supporting EN/FR/FI
 3. **R3 — LLM conversation:** Send transcription to an LLM and receive a
@@ -69,7 +84,7 @@ language would add complexity with no real benefit for a terminal app.
 6. **R6 — Language selection:** User can choose language at startup (or
    auto-detect from speech)
 7. **R7 — LLM backend selection:** Config flag to switch between Ollama
-   (local) and OpenAI (cloud)
+   (local) and OpenAI-compatible APIs (cloud, including x.ai — later phase)
 8. **R8 — Kid-friendly system prompt:** Default system prompt that keeps
    responses simple, age-appropriate, and helpful for homework
 
@@ -90,7 +105,7 @@ Set up the Python project structure, dependency management, and configuration.
 
 **Tasks:**
 - [ ] Create project structure (`src/whispy/`, `tests/`, `pyproject.toml`)
-- [ ] Set up dependency management (uv or pip with `requirements.txt`)
+- [ ] Set up dependency management with `uv`
 - [ ] Create configuration module (YAML or TOML config file for model paths,
       language, LLM backend, etc.)
 - [ ] Add a basic CLI entry point (`python -m whispy` or `whispy` command)
@@ -99,12 +114,11 @@ Set up the Python project structure, dependency management, and configuration.
 Get microphone input working reliably.
 
 **Tasks:**
-- [ ] Implement microphone recording with `sounddevice` (or `pyaudio`)
-- [ ] Implement push-to-talk: hold spacebar to record, release to stop
+- [ ] Implement microphone recording with `sounddevice`
+- [ ] Implement push-to-talk: press spacebar to start recording, press again
+      to stop (simpler than hold-to-talk in a terminal)
 - [ ] Save recorded audio to WAV buffer (in-memory, no temp files)
-- [ ] Test with different mic configurations
-- [ ] Fallback: simple "press Enter to start, Enter to stop" if keyboard
-      listener is tricky in terminal
+- [ ] Test with MacBook Pro built-in mic
 
 ### Phase 2 — Speech-to-Text (whisper.cpp)
 Transcribe captured audio to text.
@@ -122,12 +136,12 @@ Send transcribed text to an LLM and get a response.
 
 **Tasks:**
 - [ ] Implement Ollama client (using `ollama` Python package)
-- [ ] Implement OpenAI client (using `openai` Python package)
-- [ ] Create a common interface so backends are swappable via config
+- [ ] Create a backend interface so we can add OpenAI-compatible APIs later
 - [ ] Add conversation history (list of messages) for multi-turn context
 - [ ] Write kid-friendly system prompt (age-appropriate, helpful, concise)
 - [ ] Add language instruction to system prompt ("respond in French", etc.)
 - [ ] Print response to terminal as "Assistant: ..."
+- [ ] Default model: `qwen3:8b` (already installed)
 
 ### Phase 4 — Text-to-Speech (Piper)
 Convert LLM response text to spoken audio.
@@ -179,8 +193,8 @@ Run through this checklist to verify the full flow works:
 | 7 | **French TTS** | Response is spoken in French with a French voice |
 | 8 | **Finnish STT** | Set language to Finnish. Say "Paljonko on kaksi plus kaksi?" — correct Finnish transcription |
 | 9 | **Multi-turn** | Ask a follow-up question ("And if you add three more?") — response uses context from prior turn |
-| 10 | **Ollama backend** | Run with `--backend ollama` — works fully offline |
-| 11 | **OpenAI backend** | Run with `--backend openai` — works with API key set |
+| 10 | **Ollama backend** | App works fully offline with local models |
+| 11 | **Model switch** | Run with `--model mistral-nemo:12b` — different model works without code changes |
 | 12 | **Graceful exit** | Press Ctrl+C — app exits cleanly, no orphan processes |
 | 13 | **No mic error** | Unplug mic / deny permission — app shows helpful error, doesn't crash |
 | 14 | **Kid-safety check** | Ask something inappropriate — response is deflected or age-appropriate |
@@ -192,39 +206,66 @@ Run through this checklist to verify the full flow works:
 - Integration test: feed a pre-recorded WAV file through STT → LLM → TTS
   pipeline and verify each stage produces output
 
+## Decisions Made
+
+| Question | Decision |
+|----------|----------|
+| Input method | Push-to-talk (spacebar) for v1. VAD as future enhancement. |
+| LLM backend | Ollama only for v1. OpenAI/x.ai compatible API as later phase. |
+| Default LLM model | `qwen3:8b` (already installed). `mistral-nemo:12b` recommended for French. |
+| Dependency management | `uv` |
+| Target hardware | MacBook Pro M4, 64GB RAM, Apple Silicon |
+| Languages for v1 | English + French (STT + TTS). Finnish STT works, Finnish TTS TBD. |
+
 ## Open Questions
 
-See bottom of this document — these need answers before starting.
+1. **Finnish TTS** — Piper's Finnish voice selection is limited. Options:
+   - Accept lower-quality eSpeak for Finnish TTS in v1
+   - Skip Finnish TTS and only support Finnish STT (you speak Finnish, it
+     understands but replies in English/French)
+   - Investigate cloud TTS for Finnish only (adds online dependency)
+   - **What's your preference?**
 
 ---
 
-## Questions for You
+## Future Enhancement: Voice Activity Detection (VAD)
 
-1. **Push-to-talk vs. voice activity detection?**
-   Push-to-talk (hold spacebar) is simpler and more reliable. VAD (auto-detect
-   when someone is talking) is more natural but can be finicky with background
-   noise and kids. **Recommendation: start with push-to-talk.** OK?
+Adding VAD later is a **medium-difficulty** task. Here's the breakdown:
 
-2. **Do you already have Ollama installed?**
-   If yes, which models do you have? This helps me pick defaults. If not, I'll
-   include setup instructions.
+### What VAD does
+Instead of pressing spacebar, the app automatically detects when someone
+starts and stops talking, and processes the audio.
 
-3. **OpenAI API key — do you have one?**
-   If yes, I'll wire up the OpenAI backend from the start. If not, we can
-   treat it as optional and focus on Ollama.
+### Implementation options (easiest → hardest)
 
-4. **Finnish TTS availability.**
-   Piper has limited Finnish voice options. If Finnish TTS is important from
-   day one, we may need to explore alternatives (e.g., using a cloud TTS
-   API for Finnish only, or eSpeak with lower quality). **Is French + English
-   sufficient for v1?**
+| Approach | Difficulty | Quality | Notes |
+|----------|-----------|---------|-------|
+| **Silero VAD** (PyTorch model) | Low-Medium | Excellent | Best option. ~1MB model, very accurate, runs on CPU. Has a Python package (`silero-vad`). Roughly 50-100 lines of code to integrate. |
+| **WebRTC VAD** (`webrtcvad`) | Low | Good | Google's VAD. Simple Python wrapper. Works well in quiet rooms, struggles with background noise. ~30 lines to integrate. |
+| **Energy-based** (volume threshold) | Very Low | Poor | Just check if audio amplitude exceeds a threshold. Unreliable with kids (volume varies wildly). Not recommended. |
 
-5. **Dependency management preference?**
-   Do you have a preference between `uv`, `pip` + `venv`, `poetry`, or
-   `conda`? I'd suggest `uv` for simplicity — it's fast and handles venvs
-   automatically.
+### What makes VAD tricky (not the detection itself, but the edges)
 
-6. **Apple Silicon or Intel Mac?**
-   This affects whisper.cpp acceleration (Metal/CoreML on Apple Silicon) and
-   Ollama performance. Most likely Apple Silicon given the target, but worth
-   confirming.
+1. **End-of-speech detection** — How long of a silence means "done talking"?
+   Kids pause mid-sentence. Too short = cuts them off. Too long = slow.
+   Needs a tunable threshold (e.g., 1.5 seconds of silence).
+
+2. **Echo cancellation** — When the assistant speaks through the laptop
+   speaker, the mic picks it up and could trigger a new "listening" cycle.
+   Solutions: mute mic during TTS playback (simple), or use acoustic echo
+   cancellation (complex).
+
+3. **Background noise** — Kids' environments are noisy (TV, siblings).
+   Silero VAD handles this well, but needs threshold tuning.
+
+4. **Continuous listening overhead** — The mic runs constantly and feeds
+   audio chunks to the VAD model. Minimal CPU on M4 but needs a clean
+   async architecture.
+
+### Estimated scope
+- With Silero VAD: ~150-200 lines of new code, plus refactoring the audio
+  capture module to support both modes (push-to-talk and VAD).
+- Main risk: tuning the silence threshold and handling echo from speaker
+  playback.
+- Recommendation: add it as a Phase 7 toggle (`--vad` flag) alongside the
+  existing push-to-talk, so users can switch between modes.
