@@ -33,9 +33,37 @@ _EMOJI_RE = re.compile(
 
 
 def clean_for_speech(text: str) -> str:
-    """Strip emojis and collapse extra whitespace for TTS."""
+    """Prepare LLM output for natural-sounding speech.
+
+    Strips emojis, converts markdown formatting (lists, bold, headers)
+    into plain text with punctuation that TTS engines interpret as pauses.
+    """
     text = _EMOJI_RE.sub("", text)
-    text = re.sub(r"  +", " ", text)  # collapse double spaces left by removal
+
+    # Remove markdown bold/italic markers: **bold**, *italic*, __bold__, _italic_
+    text = re.sub(r"\*{1,2}(.+?)\*{1,2}", r"\1", text)
+    text = re.sub(r"_{1,2}(.+?)_{1,2}", r"\1", text)
+
+    # Remove markdown headers: ### Header -> Header.
+    text = re.sub(r"^#{1,6}\s*", "", text, flags=re.MULTILINE)
+
+    # Numbered lists: "1. item" / "2) item" -> "item." (the number adds nothing spoken)
+    text = re.sub(r"^\s*\d+[.)]\s*", "", text, flags=re.MULTILINE)
+
+    # Bullet lists: "- item" / "* item" / "• item" -> "item."
+    text = re.sub(r"^\s*[-*•]\s*", "", text, flags=re.MULTILINE)
+
+    # Turn line breaks into sentence-ending periods so TTS pauses naturally.
+    # Only add a period if the line doesn't already end with punctuation.
+    text = re.sub(r"([^\s.!?:,;])\s*\n", r"\1.\n", text)
+
+    # Collapse multiple newlines / whitespace into a single space
+    text = re.sub(r"\s*\n\s*", " ", text)
+    text = re.sub(r"  +", " ", text)
+
+    # Clean up doubled periods from the transformations above
+    text = re.sub(r"\.{2,}", ".", text)
+
     return text.strip()
 
 
