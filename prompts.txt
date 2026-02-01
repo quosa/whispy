@@ -1,0 +1,9 @@
+claude code web:
+
+My intent is to do a simple application that has voice input (speech-to-text, I heard whisper.cpp is good); calls to either a local model (olllama or mlx) or an OpenAI API; and speaks the completion (text-to-speec, I heard that Piper might be good).
+
+The main goal is for my kids to experience an "intelligent" computer system that they can interact with. English is ok, but French (and Finnish) would be great. The kids could ask some basic questions about their homework (ages 7 and 11), so most models should have the basics covered.
+
+To start, I'd like a simple macos app that can even be a terminal app that just shows the input and response in text and uses the laptop mic and speaker for input and output.
+
+Can you start by putting together a project plan with requirements, project phases and tasks, as well as quality criteria on how to test the e2e flow? Keep it simple and ask clarifying questions as needed.
