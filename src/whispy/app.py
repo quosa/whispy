@@ -58,10 +58,11 @@ def run(config: WhispyConfig) -> None:
     recorder = Recorder(sample_rate=config.sample_rate)
 
     print_banner(config)
-    print("Press SPACE to talk, Q to quit.\n")
+    print("Controls: SPACE = start/stop recording, Q = quit\n")
 
     # -- Conversation loop ---------------------------------------------------
     while True:
+        print("  Ready. Press SPACE to talk.")
         key = wait_for_key()
 
         if key in ("q", "Q"):
@@ -73,7 +74,7 @@ def run(config: WhispyConfig) -> None:
 
         # --- Record ---------------------------------------------------------
         recorder.start()
-        print_status("Listening... press SPACE to stop")
+        print_status("Recording... press SPACE when done")
 
         while True:
             k = wait_for_key()
@@ -83,12 +84,29 @@ def run(config: WhispyConfig) -> None:
         audio = recorder.stop()
         clear_status()
 
+        # Show recording diagnostics
+        diag = recorder.get_diagnostics(audio, config.sample_rate)
+
         if audio.size == 0:
             print("  (no audio captured)\n")
             continue
 
-        duration = audio.size / config.sample_rate
-        if duration < 0.3:
+        print(f"  [{diag['duration_s']}s recorded, peak={diag['peak_amplitude']}]")
+
+        if diag["stream_errors"]:
+            for err in diag["stream_errors"]:
+                print(f"  (audio warning: {err})")
+
+        if diag["is_silent"]:
+            print(
+                "  WARNING: Recording is silent (all zeros).\n"
+                "  This usually means microphone permission is not granted.\n"
+                "  Fix: System Settings > Privacy & Security > Microphone\n"
+                "        -> enable your terminal app\n"
+            )
+            continue
+
+        if diag["duration_s"] < 0.3:
             print("  (too short, skipped)\n")
             continue
 
@@ -101,8 +119,8 @@ def run(config: WhispyConfig) -> None:
         )
         clear_status()
 
-        if not text.strip():
-            print("  (silence detected)\n")
+        if not text.strip() or text.strip() == "[BLANK_AUDIO]":
+            print("  (no speech detected)\n")
             continue
 
         print(f"  You: {text}")

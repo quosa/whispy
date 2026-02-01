@@ -39,6 +39,7 @@ class Recorder:
     def start(self) -> None:
         """Start recording from the default microphone."""
         self._frames = []
+        self._status_errors: list[str] = []
         self._stream = sd.InputStream(
             samplerate=self.sample_rate,
             channels=1,
@@ -54,6 +55,8 @@ class Recorder:
         time_info: object,
         status: sd.CallbackFlags,
     ) -> None:
+        if status:
+            self._status_errors.append(str(status))
         self._frames.append(indata.copy())
 
     def stop(self) -> np.ndarray:
@@ -63,8 +66,20 @@ class Recorder:
             self._stream.close()
             self._stream = None
         if self._frames:
-            return np.concatenate(self._frames, axis=0).flatten()
+            audio = np.concatenate(self._frames, axis=0).flatten()
+            return audio
         return np.array([], dtype=np.float32)
+
+    def get_diagnostics(self, audio: np.ndarray, sample_rate: int) -> dict:
+        """Return recording diagnostics for debugging."""
+        duration = audio.size / sample_rate if audio.size > 0 else 0.0
+        peak = float(np.max(np.abs(audio))) if audio.size > 0 else 0.0
+        return {
+            "duration_s": round(duration, 1),
+            "peak_amplitude": round(peak, 4),
+            "is_silent": peak < 0.001,
+            "stream_errors": list(self._status_errors),
+        }
 
 
 def play_audio(audio: np.ndarray, sample_rate: int) -> None:
