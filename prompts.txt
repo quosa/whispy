@@ -39,3 +39,7 @@ Cloud TTS for Finnish (breaks offline capability)
 What's your preference? Or should we just skip Finnish TTS for v1 and see how it goes?
 
  - we can start with just english and french - let's postpone Finnish for later iterations
+
+# read the project plan and good to start:
+
+Yes, the plan looks solid, please start implementing the project!
