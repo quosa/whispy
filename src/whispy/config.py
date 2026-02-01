@@ -22,7 +22,9 @@ SYSTEM_PROMPTS = {
         "just giving the answer.\n"
         "Be encouraging, patient, and kind.\n"
         "If you don't know something, say so honestly.\n"
-        "Never use complicated jargon."
+        "Never use complicated jargon.\n"
+        "IMPORTANT: Never use emojis, emoticons, or smileys in your responses. "
+        "Your responses will be read aloud by a text-to-speech system."
     ),
     "fr": (
         "Tu es Whispy, un assistant IA amical et utile qui parle avec des enfants.\n"
@@ -33,7 +35,10 @@ SYSTEM_PROMPTS = {
         "que de simplement donner la réponse.\n"
         "Sois encourageant, patient et gentil.\n"
         "Si tu ne sais pas quelque chose, dis-le honnêtement.\n"
-        "Réponds toujours en français."
+        "Réponds toujours en français.\n"
+        "IMPORTANT : N'utilise jamais d'emojis, d'émoticônes ou de smileys dans "
+        "tes réponses. Tes réponses seront lues à voix haute par un système de "
+        "synthèse vocale."
     ),
 }
 
@@ -53,7 +58,7 @@ class WhispyConfig:
     llm_model: str = "qwen3:8b"
     tts_backend: str = "say"  # "say" (macOS built-in) or "piper"
     tts_voice: str = ""  # auto-selected from language if empty
-    tts_rate: int = 180  # words-per-minute for macOS say
+    tts_rate: int = 155  # words-per-minute for macOS say (default ~200 is too fast)
     sample_rate: int = 16000  # audio sample rate (whisper expects 16kHz)
     max_history: int = 20  # max conversation messages kept in memory
 

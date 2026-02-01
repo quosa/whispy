@@ -20,8 +20,9 @@ tts_backend = "say"
 # English: Samantha, Daniel, Karen   French: Thomas, Amelie
 tts_voice = ""
 
-# Speech rate for macOS say (words per minute, default 180)
-tts_rate = 180
+# Speech rate for macOS say (words per minute, default ~200 is too fast for kids)
+# 155 is a comfortable pace; adjust to taste
+tts_rate = 155
 
 # Max conversation messages to keep in memory
 max_history = 20
