@@ -136,3 +136,8 @@ ggml_metal_free: deallocating
 
 Do I press SPACE briefly to start recording and again to stop, or keep it pressed until I'm done? How can I tell if the macos has given access to use the microphone?
 
+#
+#
+# tried both english and french - pretty awesome
+
+Wow, this was way better than I expected! The voice rushes the text a bit and it's really annoying that it speaks out the smileys. Can we e.g. put in the system prompt to try and avoid smileys?
