@@ -141,3 +141,12 @@ Do I press SPACE briefly to start recording and again to stop, or keep it presse
 # tried both english and french - pretty awesome
 
 Wow, this was way better than I expected! The voice rushes the text a bit and it's really annoying that it speaks out the smileys. Can we e.g. put in the system prompt to try and avoid smileys?
+
+# git pull and re-tried but still got smileys
+
+I gig a git pull and re-tried, but immediately got:
+
+Whispy: I'm doing great! I love helping kids learn new things. How are you today? 😊
+
+Would there be a way to strip out the smileys from the text that is sent to TTS?
+
