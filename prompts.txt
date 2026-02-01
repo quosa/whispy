@@ -150,3 +150,7 @@ Whispy: I'm doing great! I love helping kids learn new things. How are you today
 
 Would there be a way to strip out the smileys from the text that is sent to TTS?
 
+# merged adn asking clarifying questions:
+
+I merged teh PR - you did an outstanding job! How many options do the STT and TTS components have? The output is a bit robotic and it still reads e.g. lists so that it doesn't do a small pause berween the list entries?
+
