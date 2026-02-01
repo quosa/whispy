@@ -43,3 +43,96 @@ What's your preference? Or should we just skip Finnish TTS for v1 and see how it
 # read the project plan and good to start:
 
 Yes, the plan looks solid, please start implementing the project!
+
+# after first try:
+
+Ok, I create a new pyvenv, installed uv and ran it, but it always says it has a blank recording?
+
+(whispy) ➜  whispy git:(claude/voice-ai-assistant-BSPIG) ✗ uv run whispy
+warning: `VIRTUAL_ENV=/Users/jussiku/.pyenv/versions/3.13.0/envs/whispy` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+Loading whisper model... whisper_init_from_file_with_params_no_state: loading model from '/Users/jussiku/Library/Application Support/pywhispercpp/models/ggml-small.bin'
+whisper_init_with_params_no_state: use gpu    = 1
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+ggml_metal_library_init: using embedded metal library
+ggml_metal_library_init: loaded in 0.004 sec
+ggml_metal_device_init: GPU name:   Apple M4 Max
+ggml_metal_device_init: GPU family: MTLGPUFamilyApple9  (1009)
+ggml_metal_device_init: GPU family: MTLGPUFamilyCommon3 (3003)
+ggml_metal_device_init: GPU family: MTLGPUFamilyMetal4  (5002)
+ggml_metal_device_init: simdgroup reduction   = true
+ggml_metal_device_init: simdgroup matrix mul. = true
+ggml_metal_device_init: has unified memory    = true
+ggml_metal_device_init: has bfloat            = true
+ggml_metal_device_init: use residency sets    = true
+ggml_metal_device_init: use shared buffers    = true
+ggml_metal_device_init: recommendedMaxWorkingSetSize  = 55662.79 MB
+whisper_init_with_params_no_state: devices    = 3
+whisper_init_with_params_no_state: backends   = 3
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51865
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 768
+whisper_model_load: n_audio_head  = 12
+whisper_model_load: n_audio_layer = 12
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 768
+whisper_model_load: n_text_head   = 12
+whisper_model_load: n_text_layer  = 12
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 3 (small)
+whisper_model_load: adding 1608 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:        Metal total size =   487.01 MB
+whisper_model_load: model size    =  487.01 MB
+whisper_backend_init_gpu: using Metal backend
+ggml_metal_init: allocating
+ggml_metal_init: found device: Apple M4 Max
+ggml_metal_init: picking default device: Apple M4 Max
+ggml_metal_init: use bfloat         = true
+ggml_metal_init: use fusion         = true
+ggml_metal_init: use concurrency    = true
+ggml_metal_init: use graph optimize = true
+whisper_backend_init: using BLAS backend
+whisper_init_state: kv self size  =   18.87 MB
+whisper_init_state: kv cross size =   56.62 MB
+whisper_init_state: kv pad  size  =    4.72 MB
+whisper_init_state: compute buffer (conv)   =   23.38 MB
+whisper_init_state: compute buffer (encode) =   33.85 MB
+whisper_init_state: compute buffer (cross)  =   15.41 MB
+whisper_init_state: compute buffer (decode) =   98.21 MB
+ok
+Connecting to Ollama... ok
+==================================================
+  Whispy - Voice AI Assistant
+  Language : English
+  LLM      : qwen3:8b
+  Whisper  : small
+  TTS      : say (Samantha)
+==================================================
+
+Press SPACE to talk, Q to quit.
+
+  [Transcribing...]Progress:   0%                           
+ Progress: 100%
+  You: [BLANK_AUDIO]                                        
+  Whispy: Hi there! 🌟 I'm Whispy, your friendly AI helper. If you have any questions, need help with homework, or just want to chat, feel free to tell me! I'm here to make learning fun and easy. What's on your mind? 😊
+
+                                                            
+  [Transcribing...]Progress:   0%                           
+Progress: 100%
+  You: [BLANK_AUDIO]                                        
+  Whispy: Hi again! 😊 I'm here to help with anything you need. What's on your mind today?
+
+  [Speaking...]Q
+^C
+Goodbye!
+ggml_metal_free: deallocating
+(whispy) ➜  whispy git:(claude/voice-ai-assistant-BSPIG) ✗ 
+
+
+Do I press SPACE briefly to start recording and again to stop, or keep it pressed until I'm done? How can I tell if the macos has given access to use the microphone?
+
