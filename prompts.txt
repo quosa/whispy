@@ -7,3 +7,24 @@ The main goal is for my kids to experience an "intelligent" computer system that
 To start, I'd like a simple macos app that can even be a terminal app that just shows the input and response in text and uses the laptop mic and speaker for input and output.
 
 Can you start by putting together a project plan with requirements, project phases and tasks, as well as quality criteria on how to test the e2e flow? Keep it simple and ask clarifying questions as needed.
+
+
+# answering questions:
+
+Push-to-talk vs. voice activity detection? I recommend starting with push-to-talk (hold spacebar). OK?
+ - you can even start with always on if that helps, but pressing space bar to talk is fine
+ - can you describe how difficult the voice detection will be of later phases?
+
+Do you have Ollama installed? If so, which models?
+ - yes, llama3.1 and qwen3, but I can download better models if you can recommend them
+
+Do you have an OpenAI API key? Or should we treat cloud as optional for now?
+ - not yet, we can start with a local model
+ - I actually have a z.ai API (coder) key that we can use as well (later)
+Finnish TTS — Piper's Finnish voice options are limited. Is French + English enough for v1?
+
+Dependency management — any preference? I'd suggest uv.
+ - haven used uv yet, but you picked python sot that'll be ok (good to learn anyway)
+
+Apple Silicon or Intel Mac? Affects whisper.cpp acceleration and Ollama performance.
+ - apple silicon, M4 mbp with 64GB
